@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "generatedAt": "2025-05-07T19:11:42.936Z",
+    "tasksAnalyzed": 7,
+    "thresholdScore": 5,
+    "projectName": "Taskmaster",
+    "usedResearch": false
+  },
+  "complexityAnalysis": [
+    {
+      "taskId": 11,
+      "taskTitle": "Implement Ida (Darkness) Channel Calculation",
+      "complexityScore": 2,
+      "recommendedSubtasks": 2,
+      "expansionPrompt": "Break down the implementation of the Ida channel calculation into subtasks covering: 1. Core function development for `max(R,G,B) - min(R,G,B)` on a NumPy array. 2. Comprehensive unit testing with various image types (black, white, primary colors, mixed).",
+      "reasoning": "The core logic is a simple pixel-wise NumPy operation. Low effort for implementation and testing."
+    },
+    {
+      "taskId": 12,
+      "taskTitle": "Implement Brightness Features (f1-f9)",
+      "complexityScore": 7,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the implementation of Brightness features (f1-f9) from the V-channel histogram into subtasks: 1. Develop a helper function for masked histogram calculation. 2. Implement moment-based features (mean, variance, skewness, kurtosis). 3. Implement the entropy feature. 4. Implement adjacent bin difference features. 5. Implement range ratio features. Each feature group should include unit tests and numerical stability considerations.",
+      "reasoning": "Involves multiple distinct mathematical formulas (9 features), histogram computation with masking, and careful handling of numerical stability. Each feature category represents a significant piece of work."
+    },
+    {
+      "taskId": 13,
+      "taskTitle": "Implement Saturation Features (f10-f18)",
+      "complexityScore": 6,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the implementation of Saturation features (f10-f18) from the S-channel histogram into subtasks: 1. Develop/reuse a helper function for masked histogram calculation. 2. Implement moment-based features. 3. Implement the entropy feature. 4. Implement adjacent bin difference features. 5. Implement range ratio features. Each feature group should include unit tests and numerical stability considerations.",
+      "reasoning": "Structurally similar to Brightness features (Task 12) but applied to the Saturation channel. Complexity is slightly lower due to potential code reuse/pattern familiarity, but still involves 9 distinct calculations."
+    },
+    {
+      "taskId": 14,
+      "taskTitle": "Implement Darkness Features (f19-f28)",
+      "complexityScore": 7,
+      "recommendedSubtasks": 5,
+      "expansionPrompt": "Break down the implementation of Darkness features (f19-f28) from the Ida-channel histogram into subtasks: 1. Develop/reuse a helper function for masked histogram calculation using the Ida channel. 2. Implement moment-based features. 3. Implement the entropy feature. 4. Implement adjacent bin difference features. 5. Implement range ratio features (and any other distinct types among the 10 features). Each feature group should include unit tests and numerical stability considerations.",
+      "reasoning": "Similar to Brightness/Saturation features, but uses the custom Ida channel and includes 10 features. Complexity arises from the number of distinct calculations and histogram processing."
+    },
+    {
+      "taskId": 15,
+      "taskTitle": "Integrate Advanced Features (f1-f28) into Pipeline",
+      "complexityScore": 5,
+      "recommendedSubtasks": 4,
+      "expansionPrompt": "Break down the integration of advanced features (f1-f28) into subtasks: 1. Modify the main feature extraction pipeline to incorporate Ida channel calculation. 2. Integrate calls to the new Brightness, Saturation, and Darkness feature calculation functions. 3. Update the main feature dictionary output structure and decide on/implement handling for older features. 4. Implement integration tests for the updated `calculate_all_features` function.",
+      "reasoning": "Involves modifying a central pipeline function, coordinating multiple new feature modules, managing data flow, and potentially refactoring. Moderate complexity due to impact on core logic."
+    },
+    {
+      "taskId": 16,
+      "taskTitle": "Update Batch Processor for Advanced Features",
+      "complexityScore": 3,
+      "recommendedSubtasks": 2,
+      "expansionPrompt": "Break down the update of the batch processor into subtasks: 1. Modify `src/batch_processor.py` to call the updated feature extraction pipeline that includes f1-f28. 2. Update the output file (CSV/Pickle) generation logic to correctly save all new features (f1-f28) with appropriate headers and test.",
+      "reasoning": "Primarily involves adapting an existing script to use the updated feature extraction output and ensuring correct data serialization. Relatively straightforward."
+    },
+    {
+      "taskId": 17,
+      "taskTitle": "Update Visualization for Advanced Features",
+      "complexityScore": 2,
+      "recommendedSubtasks": 2,
+      "expansionPrompt": "Break down the update of visualization scripts into subtasks: 1. Modify `src/all_features_display.py` (and other relevant scripts) to retrieve and display/print the new f1-f28 features. 2. Test the updated visualization output to ensure clarity and correctness of displayed features.",
+      "reasoning": "Involves modifying existing visualization scripts, primarily for textual display of new feature values. Low complexity if new complex visual panels are not required."
+    }
+  ]
+}

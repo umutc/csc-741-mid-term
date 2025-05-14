@@ -1,0 +1,49 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev-debug.log
+
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS specific
+.DS_Store
+
+# Task files
+tasks.json
+tasks/ 
+
+# python
+src/__pycache__/
+__pycache__/
+.venv/
+
+# Debug images
+data/output/
+
+materials/
+.cursor
+.windsurfrules
+.cursorrules
+.venv.example
+.taskmasterconfig
+.env.example
+.env
+
+# Ignore MCP configuration file that may contain secrets
+.cursor/mcp.json
