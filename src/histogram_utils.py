@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Tuple, Dict, List, Union, Optional
+from scipy import stats
 
 def apply_mask_to_channel(
     channel: np.ndarray,
@@ -268,3 +269,126 @@ if __name__ == "__main__":
     
     # Plot the results
     plot_histograms(histograms, title_prefix=f"Masked Histogram ({args.image}) -") 
+
+
+def calculate_histogram_stats(histogram: np.ndarray, bin_edges: np.ndarray) -> Dict[str, float]:
+    """
+    Calculate statistical metrics from a histogram.
+    
+    Args:
+        histogram: 1D NumPy array of histogram counts
+        bin_edges: 1D NumPy array of bin edges
+        
+    Returns:
+        Dictionary with statistical metrics: mean, std_dev, skewness, kurtosis, entropy
+    """
+    # Normalize histogram to get probability distribution
+    total_pixels = np.sum(histogram)
+    if total_pixels == 0:
+        return {
+            'mean': 0.0,
+            'std_dev': 0.0,
+            'skewness': 0.0,
+            'kurtosis': 0.0,
+            'entropy': 0.0
+        }
+    
+    normalized_hist = histogram / total_pixels
+    
+    # Calculate bin centers for weighted calculations
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+    
+    # Calculate mean (1st moment)
+    mean = np.sum(bin_centers * normalized_hist)
+    
+    # Calculate variance (2nd moment)
+    variance = np.sum(((bin_centers - mean) ** 2) * normalized_hist)
+    std_dev = np.sqrt(variance) if variance > 0 else 0.0
+    
+    # Calculate skewness (3rd moment)
+    if std_dev > 0:
+        skewness = np.sum(((bin_centers - mean) / std_dev) ** 3 * normalized_hist)
+    else:
+        skewness = 0.0
+    
+    # Calculate kurtosis (4th moment)
+    if std_dev > 0:
+        kurtosis = np.sum(((bin_centers - mean) / std_dev) ** 4 * normalized_hist) - 3.0  # -3 for Fisher's definition
+    else:
+        kurtosis = 0.0
+    
+    # Calculate entropy
+    # Add a small epsilon to avoid log(0)
+    epsilon = 1e-10
+    entropy = -np.sum(normalized_hist * np.log2(normalized_hist + epsilon))
+    
+    return {
+        'mean': float(mean),
+        'std_dev': float(std_dev),
+        'skewness': float(skewness),
+        'kurtosis': float(kurtosis),
+        'entropy': float(entropy)
+    }
+
+
+def calculate_histogram_differences(histogram: np.ndarray) -> Dict[str, float]:
+    """
+    Calculate metrics based on differences between adjacent histogram bins.
+    
+    Args:
+        histogram: 1D NumPy array of histogram counts
+        
+    Returns:
+        Dictionary with difference metrics: avg_diff, sum_largest_10_diffs
+    """
+    # Calculate differences between adjacent bins
+    diffs = np.abs(np.diff(histogram))
+    
+    # Calculate average difference
+    avg_diff = np.mean(diffs) if len(diffs) > 0 else 0.0
+    
+    # Calculate sum of 10 largest differences
+    # If fewer than 10 differences, use all of them
+    k = min(10, len(diffs))
+    largest_diffs = np.sort(diffs)[-k:]
+    sum_largest_k_diffs = np.sum(largest_diffs)
+    
+    return {
+        'avg_diff': float(avg_diff),
+        'sum_largest_10_diffs': float(sum_largest_k_diffs)
+    }
+
+
+def calculate_histogram_range_ratios(histogram: np.ndarray, bin_edges: np.ndarray) -> Dict[str, float]:
+    """
+    Calculate ratio metrics between different ranges of the histogram.
+    
+    Args:
+        histogram: 1D NumPy array of histogram counts
+        bin_edges: 1D NumPy array of bin edges
+        
+    Returns:
+        Dictionary with ratio metrics: ratio_70_99_to_40_69, ratio_20_39_to_0_19
+    """
+    # Determine bin indices for the percentage ranges
+    # 0-19%, 20-39%, 40-69%, 70-99%
+    n_bins = len(histogram)
+    idx_0_19 = slice(0, int(n_bins * 0.2))
+    idx_20_39 = slice(int(n_bins * 0.2), int(n_bins * 0.4))
+    idx_40_69 = slice(int(n_bins * 0.4), int(n_bins * 0.7))
+    idx_70_99 = slice(int(n_bins * 0.7), n_bins)
+    
+    # Calculate sums for each range
+    sum_0_19 = np.sum(histogram[idx_0_19])
+    sum_20_39 = np.sum(histogram[idx_20_39])
+    sum_40_69 = np.sum(histogram[idx_40_69])
+    sum_70_99 = np.sum(histogram[idx_70_99])
+    
+    # Calculate ratios, handling division by zero
+    ratio_70_99_to_40_69 = (sum_70_99 / sum_40_69) if sum_40_69 > 0 else 0.0
+    ratio_20_39_to_0_19 = (sum_20_39 / sum_0_19) if sum_0_19 > 0 else 0.0
+    
+    return {
+        'ratio_70_99_to_40_69': float(ratio_70_99_to_40_69),
+        'ratio_20_39_to_0_19': float(ratio_20_39_to_0_19)
+    }

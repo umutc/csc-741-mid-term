@@ -89,7 +89,7 @@ def display_all_features(image_path: str, output_dir=None):
         # 5. Extract ALL features
         try:
             # Calculate comprehensive features
-            features = calculate_all_features(gray_hairless, hsv_img, mask)
+            features = calculate_all_features(gray_hairless, hsv_img, img_rgb, mask)
             
             # Print the features
             print_features(features, title=f"All Features for {os.path.basename(image_path)}")

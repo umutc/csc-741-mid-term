@@ -4,17 +4,20 @@ import numpy as np
 import pandas as pd
 import os
 import time
+import matplotlib.pyplot as plt
 from tqdm import tqdm # For progress bar
+from typing import Dict, List, Tuple, Optional, Any
 
 # Import pipeline components
 from src.data_loader import load_metadata # To get image IDs and labels
-from src.color_utils import rgb_to_grayscale, rgb_to_hsv
+from src.color_utils import rgb_to_grayscale, rgb_to_hsv, calculate_ida_channel
 from src.preprocessing import remove_hair # Assuming correct_illumination might be skipped or optional
 from src.segmentation import apply_threshold
 from src.feature_extraction import calculate_all_features
 
-# Optional: For saving visualizations if needed during batch processing
-from src.all_features_display import display_all_features 
+# For visualizations during batch processing
+from src.all_features_display import display_all_features
+from src.advanced_features_display import plot_advanced_features
 
 def process_single_image(image_path: str, image_id: str, output_vis_dir: Optional[str] = None) -> Optional[Dict[str, any]]:
     """
@@ -49,8 +52,8 @@ def process_single_image(image_path: str, image_id: str, output_vis_dir: Optiona
         mask, _ = apply_threshold(gray_hairless.copy(), method='otsu', cleanup=True)
 
         # 5. Feature Extraction
-        # Note: calculate_all_features expects preprocessed grayscale and original HSV
-        features = calculate_all_features(gray_hairless, hsv_img, mask)
+        # Note: calculate_all_features expects preprocessed grayscale, original HSV, and original RGB
+        features = calculate_all_features(gray_hairless, hsv_img, img_rgb, mask)
         features['image_id'] = image_id # Add image_id for tracking
 
         # 6. Optional: Save detailed visualization for this image
@@ -58,11 +61,22 @@ def process_single_image(image_path: str, image_id: str, output_vis_dir: Optiona
             vis_save_path = os.path.join(output_vis_dir, image_id)
             os.makedirs(vis_save_path, exist_ok=True)
             try:
-                # Call the display function but redirect its plotting to save files
-                # This is a simplified call; display_all_features saves multiple plots.
-                # We'll rely on its internal saving mechanism when an output_dir is passed.
-                print(f"Saving visualization for {image_id} to {vis_save_path}...")
-                display_all_features(image_path, output_dir=vis_save_path) 
+                # Save standard feature visualization
+                print(f"Saving standard visualization for {image_id} to {vis_save_path}...")
+                display_all_features(image_path, output_dir=vis_save_path)
+                
+                # Save advanced feature visualization
+                print(f"Saving advanced features visualization for {image_id} to {vis_save_path}...")
+                try:
+                    plot_advanced_features(
+                        img_bgr,  # plot_advanced_features expects BGR format
+                        mask,
+                        title=f"Advanced Features - {image_id}",
+                    )
+                    plt.savefig(os.path.join(vis_save_path, f"{image_id}_advanced_features.png"))
+                    plt.close()
+                except Exception as e:
+                    print(f"Warning: Could not save advanced visualization for {image_id}: {e}")
             except Exception as e:
                 print(f"Warning: Could not save visualization for {image_id}: {e}")
         

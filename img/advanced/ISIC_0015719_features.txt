@@ -1,0 +1,35 @@
+FEATURES EXTRACTED FROM ISIC_0015719.jpg
+=========================================
+
+INTENSITY FEATURES (Grayscale):
+  mean: 188.1742
+  std: 8.9837
+  min: 150.0000
+  max: 251.0000
+
+COLOR FEATURES (HSV):
+  Hue:
+    mean: 11.6923
+    std: 4.7659
+  Saturation:
+    mean: 95.9566
+    std: 16.1448
+  Value:
+    mean: 226.5550
+    std: 8.9117
+
+BORDER FEATURES:
+  gradient_mean: 3.9116
+  gradient_std: 3.3239
+  gradient_max: 101.0000
+  irregularity: 0.0162
+
+TEXTURE FEATURES:
+  Top Hat (Bright Details):
+    mean: 1.5873
+    std: 1.7935
+  Bottom Hat (Dark Details):
+    mean: 1.4178
+    std: 1.4424
+  Summary Metrics:
+    contrast_index: 3.0050
